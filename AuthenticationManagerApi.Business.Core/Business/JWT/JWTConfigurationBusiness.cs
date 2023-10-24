@@ -141,6 +141,20 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
             return true;
         }
 
+        public async Task<UserApi?> GetOneUser(string username)
+        {
+            var result = await _userApiConfiguration.GetUser(username);
+            if (result==null) return null;
+            return result;
+        }
+
+        public async Task<UserApi?> GetUserbyId(int id)
+        {
+            var result = await _userApiConfiguration.GetById(id);
+            if (result == null) return null;
+            return result;
+        }
+
         public class middleUser
         {
             public string UserName { get; set;}

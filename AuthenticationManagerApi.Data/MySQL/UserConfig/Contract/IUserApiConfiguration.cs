@@ -11,6 +11,7 @@ namespace AuthenticationManagerApi.Data.MySQL.UserConfig.Contract
     {
         Task<IEnumerable<UserApi>> GetAllUsers();
         Task<UserApi> GetUser(string username);
+        Task<UserApi> GetById(int id);
         Task<bool> InsertUser(UserApi user);
         Task<bool> UpdateUser(UserApi user, int id);
         Task<bool> DeleteUser(int id);

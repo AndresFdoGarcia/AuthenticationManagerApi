@@ -57,15 +57,26 @@ namespace AuthenticationManagerApi.Data.MySQL.UserConfig.Implementation
             return db.QueryFirstOrDefaultAsync<UserApi>(sql, new { Username = username, Password = password });
         }
 
+        public Task<UserApi> GetById(int id)
+        {
+            var db = dbConnection();
+
+            var sql = @"SELECT id, username, firstname, lastname, email, rol
+                        FROM users
+                        WHERE id = @Id";                        
+
+            return db.QueryFirstOrDefaultAsync<UserApi>(sql, new { Id = id });
+        }
+
         public Task<UserApi> GetUser(string username)
         {
             var db = dbConnection();
 
             var sql = @"SELECT id, username, firstname, lastname, email, rol
                         FROM users
-                        WHERE username = @Username";                        
+                        WHERE username = @Username";
 
-            return db.QueryFirstOrDefaultAsync<UserApi>(sql, new { Username = username});
+            return db.QueryFirstOrDefaultAsync<UserApi>(sql, new { Username = username });
         }
 
         public async Task<bool> InsertUser(UserApi user)

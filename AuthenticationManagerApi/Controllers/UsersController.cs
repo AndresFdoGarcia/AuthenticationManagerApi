@@ -33,10 +33,11 @@ namespace AuthenticationManagerApi.Controllers
         }
 
         [HttpGet("AllUsers")]
-        [Authorize(Roles = ("Admin"))]
+        //[Authorize(Roles = ("Admin"))]
         public async Task<IActionResult> GetAllUsers()
         {
-            return Ok(await _usersApiConfiguration.GetAllUsers());
+            var response = await _usersApiConfiguration.GetAllUsers();
+            return StatusCode(200,response);
         }
 
         [HttpPost("Login")]
@@ -62,17 +63,23 @@ namespace AuthenticationManagerApi.Controllers
         //[Authorize(Roles =("Admin"))]
         public async Task<IActionResult> CreateUser(UserApi userApi)
         {
-            if(userApi == null) return BadRequest();
-            if (userApi.Rol == "" || userApi.Rol == null) {
-                userApi.Rol = "user";
-            }            
+            if(userApi == null) return BadRequest();                   
             var result = _jwt.Createuser(userApi).Result;
 
             if (result.success == false)
             {
                 return BadRequest(result.message);
             }
-            return StatusCode(200, userApi);
+            else
+            {
+                var userf = new UserInfo();
+                userf.Username = userApi.Username;
+                userf.Firstname = userApi.Firstname;
+                userf.Lastname = userApi.Lastname;
+                userf.Email = userApi.Email;
+                return StatusCode(200, userf);
+            }
+            
         }
 
         [HttpGet("OneUser")]
@@ -84,15 +91,20 @@ namespace AuthenticationManagerApi.Controllers
             {
                 var eror = new UserApi();
 
-                eror.Id = 0;
+                eror.Id = "";
                 eror.Username = "";
                 eror.Lastname = "";
-                eror.Rol = "";
+                eror.IdNumber = "";
+                eror.IdType = "";
                 eror.Email = "";
                 eror.Firstname = "";
 
 
                 return StatusCode(200,eror);
+            }
+            else
+            {
+                result.Username= username;
             }
 
             return StatusCode(200, result);
@@ -100,17 +112,18 @@ namespace AuthenticationManagerApi.Controllers
 
         [HttpGet("OnlyUser")]
         //[Authorize(Roles = ("Admin"))]
-        public async Task<IActionResult> GetUserbyId(int id)
+        public async Task<IActionResult> GetUserbyId(string id)
         {
             var result = _usersApiConfiguration.GetById(id).Result;
             if (result is null)
             {
                 var eror = new UserApi();
 
-                eror.Id = 0;
+                eror.Id = "";
                 eror.Username = "";
                 eror.Lastname = "";
-                eror.Rol = "";
+                eror.IdNumber = "";
+                eror.IdType = "";
                 eror.Email = "";
                 eror.Firstname = "";
 

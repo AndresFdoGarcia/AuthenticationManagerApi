@@ -9,12 +9,12 @@ namespace AuthenticationManagerApi.Data.MySQL.UserConfig.Contract
 {
     public interface IUserApiConfiguration
     {
-        Task<IEnumerable<UserApi>> GetAllUsers();
-        Task<UserApi> GetUser(string username);
-        Task<UserApi> GetById(int id);
+        Task<IEnumerable<UserInfo>> GetAllUsers();
+        Task<UserInfo> GetUser(string username);
+        Task<UserApi> GetById(string id);
         Task<bool> InsertUser(UserApi user);
-        Task<bool> UpdateUser(UserApi user, int id);
-        Task<bool> DeleteUser(int id);
-        Task<UserApi> GetAuthUser(string username,string password);
+        Task<bool> UpdateUser(UserApi user, string id);
+        Task<bool> DeleteUser(string id);
+        Task<UserInfo> GetAuthUser(string username,string password);        
     }
 }

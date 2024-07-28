@@ -32,6 +32,7 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
             var result = await _userApiConfiguration.GetAuthUser(loginUser.UserName, loginUser.Password);
             if(result!=null)
             {
+                result.Username= loginUser.UserName;
                 var token = GenerateToken(result);
                 MResponse response = new MResponse
                 {
@@ -43,7 +44,7 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
             return null;
         }
 
-        private string GenerateToken(UserApi user)
+        private string GenerateToken(UserInfo user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -54,8 +55,7 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
                 new Claim(ClaimTypes.NameIdentifier,user.Username),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.GivenName,user.Firstname),
-                new Claim(ClaimTypes.Surname,user.Lastname),
-                new Claim(ClaimTypes.Role,user.Rol)
+                new Claim(ClaimTypes.Surname,user.Lastname)
             };
 
             //Crear el token
@@ -90,9 +90,8 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
 
                 middleUser middleUser = new middleUser
                 {
-                    UserName = user.Result.Username,
-                    Email = user.Result.Email,
-                    Rol = user.Result.Rol
+                    UserName = userName,
+                    Email = user.Result.Email                    
                 };
 
                 return new
@@ -134,21 +133,21 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
             };
         }
 
-        public async Task<bool> DeleteUser(int id)
+        public async Task<bool> DeleteUser(string id)
         {
             var result = await _userApiConfiguration.DeleteUser(id);
             if (!result) return false;
             return true;
         }
 
-        public async Task<UserApi?> GetOneUser(string username)
+        public async Task<UserInfo?> GetOneUser(string username)
         {
             var result = await _userApiConfiguration.GetUser(username);
             if (result==null) return null;
             return result;
         }
 
-        public async Task<UserApi?> GetUserbyId(int id)
+        public async Task<UserApi?> GetUserbyId(string id)
         {
             var result = await _userApiConfiguration.GetById(id);
             if (result == null) return null;
@@ -159,7 +158,7 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
         {
             public string UserName { get; set;}
             public string Email { get; set;}
-            public string Rol { get; set;}
+            
         }
 
         public class MResponse
@@ -176,9 +175,13 @@ namespace AuthenticationManagerApi.Business.Core.Business.JWT
             {
                 errors.Add("Campo UserName es requerido");
             };
-            if (string.IsNullOrEmpty(user.Rol))
+            if (string.IsNullOrEmpty(user.IdNumber))
             {
-                errors.Add("Campo Rol es requerido");
+                errors.Add("Campo IdNumber es requerido");
+            };
+            if (string.IsNullOrEmpty(user.IdType))
+            {
+                errors.Add("Campo Tipo es requerido");
             };
             if (string.IsNullOrEmpty(user.Email))
             {
